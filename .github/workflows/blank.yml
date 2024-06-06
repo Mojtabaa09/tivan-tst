@@ -1,0 +1,133 @@
+using System;
+using System.Collections.Generic;
+
+namespace LibraryManager
+{
+    class Book
+    {
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public string ISBN { get; set; }
+        public int Genre { get; set; } // 1: داستان، 2: علمی تخیلی، 3: آموزشی، و غیره
+
+        public Book(string title, string author, string isbn, int genre)
+        {
+            Title = title;
+            Author = author;
+            ISBN = isbn;
+            Genre = genre;
+        }
+    }
+
+    class LibraryManager
+    {
+        private List<Book> books;
+
+        public LibraryManager()
+        {
+            books = new List<Book>();
+        }
+
+        public void AddBook(string title, string author, string isbn, int genre)
+        {
+            books.Add(new Book(title, author, isbn, genre));
+        }
+
+        public List<Book> SearchBooks(string query)
+        {
+            List<Book> results = new List<Book>();
+
+            foreach (Book book in books)
+            {
+                if (book.Title.ToLower().Contains(query.ToLower()) ||
+                    book.Author.ToLower().Contains(query.ToLower()) ||
+                    book.ISBN.ToLower().Contains(query.ToLower()))
+                {
+                    results.Add(book);
+                }
+            }
+
+            return results;
+        }
+
+        public void EditBook(string isbn, string newTitle, string newAuthor, int newGenre)
+        {
+            Book book = books.Find(b => b.ISBN == isbn);
+
+            if (book != null)
+            {
+                book.Title = newTitle;
+                book.Author = newAuthor;
+                book.Genre = newGenre;
+            }
+        }
+
+        public void RemoveBook(string isbn)
+        {
+            books.RemoveAll(b => b.ISBN == isbn);
+        }
+
+        public void PrintBooks()
+        {
+            foreach (Book book in books)
+            {
+                Console.WriteLine("عنوان: {0}, نویسنده: {1}, ISBN: {2}, ژانر: {3}", book.Title, book.Author, book.ISBN, book.Genre);
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            LibraryManager library = new LibraryManager();
+
+            while (true)
+            {
+                Console.WriteLine("\nمنوی مدیریت کتابخانه:");
+                Console.WriteLine("1. اضافه کردن کتاب جدید");
+                Console.WriteLine("2. جستجوی کتاب");
+                Console.WriteLine("3. ویرایش اطلاعات کتاب");
+                Console.WriteLine("4. حذف کتاب");
+                Console.WriteLine("5. نمایش لیست کتاب ها");
+                Console.WriteLine("6. خروج");
+
+                Console.Write("انتخاب خود را وارد کنید: ");
+                int choice = int.Parse(Console.ReadLine());
+
+                switch (choice)
+                {
+                    case 1:
+                        Console.Write("عنوان کتاب: ");
+                        string title = Console.ReadLine();
+
+                        Console.Write("نویسنده کتاب: ");
+                        string author = Console.ReadLine();
+
+                        Console.Write("ISBN کتاب: ");
+                        string isbn = Console.ReadLine();
+
+                        Console.Write("ژانر کتاب (1: داستان، 2: علمی تخیلی، 3: آموزشی، و غیره): ");
+                        int genre = int.Parse(Console.ReadLine());
+
+                        library.AddBook(title, author, isbn, genre);
+                        Console.WriteLine("کتاب با موفقیت اضافه شد!");
+                        break;
+
+                    case 2:
+                        Console.Write("عبارت مورد جستجو: ");
+                        string query = Console.ReadLine();
+
+                        List<Book> results = library.SearchBooks(query);
+
+
+                        if (results.Count > 0)
+                        {
+                            Console.WriteLine("\nنتایج جستجو:");
+                            foreach (Book book in results)
+                            {
+                                Console.WriteLine("عنوان: {0}, نویسنده: {1}, ISBN: {2}", book.Title, book.Author, book.ISBN);
+                            }
+                        }
+                        else
+                        {
